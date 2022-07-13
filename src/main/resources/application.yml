@@ -1,0 +1,9 @@
+server:
+  port: 8082
+spring:
+  datasource:
+    druid:
+      url: jdbc:oracle:thin:@127.0.0.1:1522:ora11g
+      username: wang
+      password: wang
+      driver-class-name: oracle.jdbc.driver.OracleDriver
