@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="js/axios-0.18.0.js"></script>
+    <script type="text/javascript" src="js/vue.js"></script>
+<!--    <link rel="stylesheet" type="text/css" href="elementui/index.js">-->
+    <link rel="stylesheet" type="text/css" href="font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/eot" href="font-awesome/fonts/fontawesome-webfont.eot">
+    <link rel="stylesheet" type="text/svg" href="font-awesome/fonts/fontawesome-webfont.svg">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+</head>
+<style>
+    *{
+        padding: 0;
+        margin: 0;
+    }
+</style>
+<body>
+<div id="app">
+
+    <div style="padding-top: 20px;background: #180030;height: 1200px">
+        <el-header>
+            <h1 style="text-align: center;color: #ffffff">Easy Copy</h1>
+        </el-header>
+        <el-main style="margin-left:70%">
+            <el-button style="background: #0f001d;color: #ffffff" @click="dbForm.show=true">添加数据库</el-button>
+            <span v-if="dbForm.success===1">✅</span>
+            <span v-if="dbForm.success===2">❎</span>
+        </el-main>
+
+
+        <!--添加的数据库表单-->
+        <el-dialog title="请输入数据库连接信息" :visible.sync="dbForm.show">
+            <el-form :model="dbForm">
+                <el-form-item label="请输入连接url:">
+                    <el-input v-model="dbForm.url" style="width: 350px"></el-input>
+                </el-form-item>
+                <el-form-item label="请输入用户名:">
+                    <el-input v-model="dbForm.userName" style="width: 350px"></el-input>
+                </el-form-item>
+                <el-form-item label="请输入密码:">
+                    <el-input v-model="dbForm.password" style="width: 350px"></el-input>
+                </el-form-item>
+            </el-form>
+            <div style="margin-left: 500px">
+                <el-button @click="dbForm.show= false">取 消</el-button>
+                <el-button style="background: #01adf9;color: #ffffff" type="primary" @click="collectDB()">确 定 连 接
+                </el-button>
+            </div>
+        </el-dialog>
+    </div>
+
+</div>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data:{
+            dbForm: {
+                show: false,
+                success: 0,
+                url: '',
+                userName: '',
+                password: '',
+            },
+            local:'http://localhost:8082/'
+        },
+        created(){
+
+        },
+        methods:{
+            collectDB(){
+                axios.post(this.local+"checkCollect",this.dbForm).then((res)=>{
+                    if (res.data.flag){
+                        //连接成功
+                        this.$message.success(res.data.message);
+                        this.dbForm.success=1;
+                        this.dbForm.show=false;
+                    }else {
+                        this.$message.error(res.data.message);
+                        this.dbForm.success=2;
+                    }
+                })
+            }
+        },
+        mounted(){
+
+        },
+    })
+</script>
+</body>
+</html>

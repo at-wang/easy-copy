@@ -1,35 +1,26 @@
 package com.wang.copyeasy.utils;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import com.wang.copyeasy.form.DBForm;
+
+import java.sql.*;
 
 public class DBUtils {
-    public static Connection getConnection(){
-        Connection conn=null;
+    public static Connection getConnection(DBForm form) throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        String url = "jdbc:oracle:thin:@127.0.0.1:1522:ora11g";
+        String user = "wang";
+        String password = "wang";
 
-        try {
-            String url="jdbc:oracle:thin:@127.0.0.1:1522:ora11g";
-            String user="wang";
-            String password="wang";
+        Class.forName("oracle.jdbc.driver.OracleDriver");//加载数据驱动
+        conn = DriverManager.getConnection(form.getUrl(), form.getUserName(), form.getPassword());// 连接数据库
 
-            Class.forName("oracle.jdbc.driver.OracleDriver");//加载数据驱动
-            conn = DriverManager.getConnection(url, user, password);// 连接数据库
 
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            System.out.println("加载数据库驱动失败");
-        }catch(Exception e){
-            e.printStackTrace();
-            System.out.println("连接数据库失败");
-        }
         return conn;
     }
-    public static void close(Connection conn, PreparedStatement ps, ResultSet rs){
+
+    public static void close(Connection conn, PreparedStatement ps, ResultSet rs) {
         try {
-            if(rs!=null){
+            if (rs != null) {
                 rs.close();
             }
         } catch (SQLException e) {
@@ -37,7 +28,7 @@ public class DBUtils {
         }
 
         try {
-            if(ps!=null){
+            if (ps != null) {
                 ps.close();
             }
         } catch (SQLException e) {
@@ -45,7 +36,7 @@ public class DBUtils {
         }
 
         try {
-            if(conn!=null){
+            if (conn != null) {
                 conn.close();
             }
         } catch (SQLException e) {
