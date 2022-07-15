@@ -2,24 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Easy Copy</title>
     <script type="text/javascript" src="js/axios-0.18.0.js"></script>
     <script type="text/javascript" src="js/vue.js"></script>
-<!--    <link rel="stylesheet" type="text/css" href="elementui/index.js">-->
+    <!--    <link rel="stylesheet" type="text/css" href="elementui/index.js">-->
     <link rel="stylesheet" type="text/css" href="font-awesome/css/font-awesome.min.css">
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
     <link rel="stylesheet" type="text/eot" href="font-awesome/fonts/fontawesome-webfont.eot">
     <link rel="stylesheet" type="text/svg" href="font-awesome/fonts/fontawesome-webfont.svg">
     <!-- 引入样式 -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <!-- 引入组件库 -->
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="js/clipboard.min.js"></script>
+
 
 </head>
 <style>
-    *{
+    * {
         padding: 0;
         margin: 0;
     }
+
 </style>
 <body>
 <div id="app">
@@ -32,6 +36,10 @@
             <el-button style="background: #0f001d;color: #ffffff" @click="dbForm.show=true">添加数据库</el-button>
             <span v-if="dbForm.success===1">✅</span>
             <span v-if="dbForm.success===2">❎</span>
+        </el-main>
+        <el-main style="margin-left: 25%">
+            <el-button style="background: #0f001d;color: #ffffff" @click="batchInsertSql()">生成插入语句
+            </el-button>
         </el-main>
 
 
@@ -47,10 +55,28 @@
                 <el-form-item label="请输入密码:">
                     <el-input v-model="dbForm.password" style="width: 350px"></el-input>
                 </el-form-item>
+                <el-form-item label="请输入表名:">
+                    <el-input v-model="dbForm.tableName" style="width: 350px"></el-input>
+                </el-form-item>
             </el-form>
             <div style="margin-left: 500px">
                 <el-button @click="dbForm.show= false">取 消</el-button>
                 <el-button style="background: #01adf9;color: #ffffff" type="primary" @click="collectDB()">确 定 连 接
+                </el-button>
+            </div>
+        </el-dialog>
+
+        <!--批量生成插入sql-->
+        <el-dialog title="插入语句" :visible.sync="batchInsertSqlForm.show">
+            <el-input
+                    id="copyCode"
+                    type="textarea"
+                    :rows="20"
+                    v-model="batchInsertSqlForm.data">
+            </el-input>
+            <div style="text-align: center;margin-top: 20px">
+                <el-button @click="batchInsertSql">刷 新</el-button>
+                <el-button class="copy" data-clipboard-target="#copyCode" style="background: #01adf9;color: #ffffff" type="primary" @click="copySql()">复 制
                 </el-button>
             </div>
         </el-dialog>
@@ -60,35 +86,54 @@
 <script>
     var vm = new Vue({
         el: '#app',
-        data:{
+        data: {
             dbForm: {
                 show: false,
                 success: 0,
-                url: '',
-                userName: '',
-                password: '',
+                url: 'jdbc:oracle:thin:@127.0.0.1:1522:ora11g',
+                userName: 'wang',
+                password: 'wang',
+                tableName: 'USER2'
             },
-            local:'http://localhost:8082/'
+            batchInsertSqlForm: {show: false, data: ""},
+
+
+            local: 'http://localhost:8082/',
         },
-        created(){
+        created() {
 
         },
-        methods:{
-            collectDB(){
-                axios.post(this.local+"checkCollect",this.dbForm).then((res)=>{
-                    if (res.data.flag){
+        methods: {
+            collectDB() {
+                axios.post(this.local + "checkCollect", this.dbForm).then((res) => {
+                    if (res.data.flag) {
                         //连接成功
                         this.$message.success(res.data.message);
-                        this.dbForm.success=1;
-                        this.dbForm.show=false;
-                    }else {
+                        this.dbForm.success = 1;
+                        this.dbForm.show = false;
+                    } else {
                         this.$message.error(res.data.message);
-                        this.dbForm.success=2;
+                        this.dbForm.success = 2;
                     }
                 })
+            },
+            batchInsertSql() {
+                this.batchInsertSqlForm.show = true;
+                axios.post(this.local + "batchInsertSql", this.dbForm).then((res) => {
+                    var array='';
+                    for (let i = 0; i < res.data.data.length; i++) {
+                        array+=res.data.data[i];
+                    }
+                    if (res.data.flag){
+                        this.batchInsertSqlForm.data=array;
+                    }
+                })
+            },
+            copySql(){
+                new ClipboardJS('.copy');
             }
         },
-        mounted(){
+        mounted() {
 
         },
     })

@@ -16,5 +16,5 @@ public class DBForm {
     @NotNull
     private String password;//密码
     @NotNull
-    private String tableName;//密码
+    private String tableName;//表名
 }
