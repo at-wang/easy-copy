@@ -7,6 +7,13 @@ spring:
       username: wang
       password: wang
       driver-class-name: oracle.jdbc.driver.OracleDriver
+  servlet:
+    multipart:
+      enabled: true #开启上传文件
+      max-file-size: 20MB #文件大小
+      max-request-size: 50MB #请求大小
+file:
+  save-path: 'C:\Users\Administrator\Downloads'
 mybatis-plus:
   mapper-locations: classpath:dao/*.xml
   configuration:

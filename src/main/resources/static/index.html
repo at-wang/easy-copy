@@ -3,18 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Easy Copy</title>
+    <!-- 引入样式 -->
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
+    <link rel="stylesheet" href="elementui/index.css">
+    <!-- 引入组件库 -->
+    <script src="js/clipboard.min.js"></script>
     <script type="text/javascript" src="js/axios-0.18.0.js"></script>
     <script type="text/javascript" src="js/vue.js"></script>
-    <!--    <link rel="stylesheet" type="text/css" href="elementui/index.js">-->
-    <link rel="stylesheet" type="text/css" href="font-awesome/css/font-awesome.min.css">
-    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
-    <link rel="stylesheet" type="text/eot" href="font-awesome/fonts/fontawesome-webfont.eot">
-    <link rel="stylesheet" type="text/svg" href="font-awesome/fonts/fontawesome-webfont.svg">
-    <!-- 引入样式 -->
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
-    <!-- 引入组件库 -->
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-    <script src="js/clipboard.min.js"></script>
+    <script type="text/javascript" src="elementui/index.js"></script>
 
 
 </head>
@@ -39,6 +35,10 @@
         </el-main>
         <el-main style="margin-left: 25%">
             <el-button style="background: #0f001d;color: #ffffff" @click="batchInsertSql()">生成插入语句
+            </el-button>
+        </el-main>
+        <el-main style="margin-left: 25%">
+            <el-button style="background: #0f001d;color: #ffffff" @click="UploadPDFForm.show=true">PDF转EXCEL
             </el-button>
         </el-main>
 
@@ -69,6 +69,7 @@
         <!--批量生成插入sql-->
         <el-dialog title="插入语句" :visible.sync="batchInsertSqlForm.show">
             <el-input
+
                     id="copyCode"
                     type="textarea"
                     :rows="20"
@@ -76,9 +77,28 @@
             </el-input>
             <div style="text-align: center;margin-top: 20px">
                 <el-button @click="batchInsertSql">刷 新</el-button>
-                <el-button class="copy" data-clipboard-target="#copyCode" style="background: #01adf9;color: #ffffff" type="primary" @click="copySql()">复 制
+                <el-button class="copy" data-clipboard-target="#copyCode" style="background: #01adf9;color: #ffffff"
+                           type="primary" @click="copySql()">复 制
                 </el-button>
             </div>
+        </el-dialog>
+        <!--上传pdf表单-->
+        <el-dialog title="PDF转EXCEL" :visible.sync="UploadPDFForm.show">
+            <el-upload
+                    style="text-align: center"
+                    drag
+                    action="/UploadPdf"
+                    :on-success="uploadSuccess"
+                    :on-remove="UploadPDFForm.data=''"
+                    multiple>
+                <i class="el-icon-upload"></i>
+                <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+            </el-upload>
+            <el-input placeholder="请输入需要转的pdf页码" v-model="UploadPDFForm.page"
+                      style="margin-left: 320px;width: 300px"></el-input>
+            <el-button style="background: #01adf9;color: #ffffff;margin-top: 20px"
+                       type="primary" @click="conversion()">开 始 转 换
+            </el-button>
         </el-dialog>
     </div>
 
@@ -87,6 +107,7 @@
     var vm = new Vue({
         el: '#app',
         data: {
+            //数据库的连接信息
             dbForm: {
                 show: false,
                 success: 0,
@@ -95,9 +116,10 @@
                 password: 'wang',
                 tableName: 'USER2'
             },
+            //生成插入语句
             batchInsertSqlForm: {show: false, data: ""},
-
-
+            //上传pdf表单
+            UploadPDFForm: {show: false, data: '', page: ""},
             local: 'http://localhost:8082/',
         },
         created() {
@@ -120,21 +142,48 @@
             batchInsertSql() {
                 this.batchInsertSqlForm.show = true;
                 axios.post(this.local + "batchInsertSql", this.dbForm).then((res) => {
-                    var array='';
+                    var array = '';
                     for (let i = 0; i < res.data.data.length; i++) {
-                        array+=res.data.data[i];
+                        array += res.data.data[i];
                     }
-                    if (res.data.flag){
-                        this.batchInsertSqlForm.data=array;
+                    if (res.data.flag) {
+                        this.batchInsertSqlForm.data = array;
                     }
                 })
             },
-            copySql(){
-                new ClipboardJS('.copy');
+            copySql() {
+
+            },
+            uploadSuccess(response, file, fileList) {
+                console.log(response, file, fileList);
+                this.UploadPDFForm.data = response.data;
+            },
+
+            conversion() {
+                if (!this.UploadPDFForm.data.length > 0) {
+                    this.$message.error("请上传文件");
+                } else if (!this.UploadPDFForm.page > 0) {
+                    this.$message.error("请输入需要转入的页码");
+                } else {
+                    axios.get(this.local+"PdfToExcel",{
+                        params:{
+                            'page':this.UploadPDFForm.page+"",
+                            'path':this.UploadPDFForm.data,
+
+                        }
+                    }).then((res)=>{
+                        if (res.data.flag){
+                            this.$message.success("下载成功")
+                            location.href=res.data.data;
+                        }
+                    })
+                }
+
             }
+
         },
         mounted() {
-
+            new ClipboardJS('.copy');
         },
     })
 </script>

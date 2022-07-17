@@ -37,7 +37,7 @@ public class RandomSqlUtils {
     public static StringBuilder getVarChar() {
         StringBuilder stringBuilder = new StringBuilder();
         UUID uuid = UUID.randomUUID();
-        stringBuilder.append("'").append(uuid.toString().substring(11, 12)).append("'");
+        stringBuilder.append("'").append(uuid.toString().substring(11, 21)).append("'");
         return stringBuilder;
     }
 }
