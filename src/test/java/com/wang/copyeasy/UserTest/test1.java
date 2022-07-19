@@ -2,13 +2,14 @@ package com.wang.copyeasy.UserTest;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfCopy;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
-import com.wang.copyeasy.VO.PoiResult;
 import com.wang.copyeasy.utils.PoiUtils;
+import com.wang.copyeasy.vo.PoiResult;
 import io.github.jonathanlink.PDFLayoutTextStripper;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -19,8 +20,10 @@ import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -181,12 +184,13 @@ public class test1 {
         System.out.println(list);
         List<List<Map<String, Object>>> data = (List<List<Map<String, Object>>>) list.get(0).get("data");
         System.out.println(data);
-
+//https://blog.csdn.net/weixin_31188927/article/details/115963262?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165818895516780357281315%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=165818895516780357281315&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-1-115963262-null-null.142^v32^new_blog_pos_by_title,185^v2^control&utm_term=poi%E5%AF%BC%E5%87%BAexcel%E6%8D%A2%E8%A1%8C%E8%87%AA%E9%80%82%E5%BA%94&spm=1018.2226.3001.4187
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet(System.currentTimeMillis() + "");
         XSSFCellStyle cellStyle = (XSSFCellStyle) workbook.createCellStyle();
         cellStyle.setAlignment(HorizontalAlignment.CENTER);
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
         cellStyle.setWrapText(true);
         XSSFFont font = (XSSFFont) workbook.createFont();
         font.setFontName("宋体");
@@ -195,7 +199,7 @@ public class test1 {
 
         for (List<Map<String, Object>> datum : data) {
             Row row = sheet.createRow(rowCount++);
-            sheet.setColumnWidth(rowCount, 100 * 20);
+            //sheet.setColumnWidth(rowCount, 100 * 20);
             Cell cell = null;
             int cellCount = 0;
             for (Map<String, Object> map : datum) {
@@ -204,16 +208,19 @@ public class test1 {
                 BigDecimal height = (BigDecimal) map.get("height");
                 short heigntShort = height.setScale(1, RoundingMode.HALF_UP).shortValue();
                 if (widthInt > 0) {
-                    sheet.setColumnWidth(cellCount, widthInt * 30);
-                    row.setHeight((short) (heigntShort * 20));
+                    sheet.setColumnWidth(cellCount, widthInt * 80);
+                    sheet.autoSizeColumn(rowCount);
+                    row.setHeight((short) (heigntShort * 40));
                     cell = row.createCell(cellCount++);
-                    cell.setCellValue((String) map.get("text"));
+                    String text = (String) map.get("text");
+                    String s = text.replaceAll("\r", "\r\n");
+                    cell.setCellValue(new XSSFRichTextString(s));
                 }
                 PoiResult result = PoiUtils.isMergedRegion(sheet, rowCount, cellCount);
-              /*  if(result.merged){
+                if (result.merged) {
                     CellRangeAddress cellAddresses = new CellRangeAddress(result.startRow, result.endRow, result.startCol, result.endCol);
                     sheet.addMergedRegion(cellAddresses);
-                }*/
+                }
             }
             // cellCount=0;
         }
@@ -226,6 +233,22 @@ public class test1 {
             System.out.println("失败");
 
         }
+    }
+
+    @Test
+    void test6() throws ParseException {
+        String[] args = new String[]{"-f=JSON", "-p=3", "C:\\Users\\Administrator\\Downloads\\test2.pdf", "-l"};
+        CommandLineParser parser = new DefaultParser();
+        CommandLine cmd = parser.parse(CommandLineApp.buildOptions(), args);
+        StringBuilder stringBuilder = new StringBuilder();
+        new CommandLineApp(stringBuilder, cmd).extractTables(cmd);
+        System.out.println(stringBuilder);
+        JSONArray objects = JSON.parseArray(stringBuilder.toString());
+        for (Object object : objects) {
+            System.out.println(object);
+        }
+
 
     }
+
 }
