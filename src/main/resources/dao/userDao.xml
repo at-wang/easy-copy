@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wang.copyeasy.dao.UserDao">
+
+
+        <insert id="insertUser">
+                INSERT INTO USER2(NAME, AGE, ID, TEST, EWQE, WEWQ, EWQEF, EWDSR, LJFS, DASDRDA, RFSDSAD)
+                VALUES (#{NAME},#{AGE}, #{ID}, #{TEST},#{EWQE} ,#{WEWQ} , #{EWQEF}, #{EWDSR}, #{LJFS}, #{DASDRDA}, #{RFSDSAD})
+        </insert>
+</mapper>

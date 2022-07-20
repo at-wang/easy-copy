@@ -1,11 +1,16 @@
 package com.wang.copyeasy.controller;
 
-import com.wang.copyeasy.VO.Result;
+
 import com.wang.copyeasy.form.DBForm;
 import com.wang.copyeasy.service.CollectDBService;
+import com.wang.copyeasy.vo.Result;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +21,9 @@ public class CollectDBController {
 
     @Autowired
     private CollectDBService collectDBService;
+
+    @Value("${file.save-path}")
+    private String dirTmp;
 
 
     @PostMapping("/checkCollect")
@@ -42,4 +50,8 @@ public class CollectDBController {
         }
         return new Result(true,"成功",list);
     }
+
+
+
+
 }

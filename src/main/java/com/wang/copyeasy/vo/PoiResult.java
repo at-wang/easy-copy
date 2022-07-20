@@ -1,4 +1,4 @@
-package com.wang.copyeasy.VO;
+package com.wang.copyeasy.vo;
 
 
 import lombok.AllArgsConstructor;

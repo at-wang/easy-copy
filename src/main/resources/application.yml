@@ -13,7 +13,8 @@ spring:
       max-file-size: 20MB #文件大小
       max-request-size: 50MB #请求大小
 file:
-  save-path: 'C:\Users\Administrator\Downloads'
+  save-path: 'D:\报表\'
+  path: 'C:\Users\Administrator\Downloads\湘人社函〔2020〕159号(一次性退休补贴申报第19页).pdf'
 mybatis-plus:
   mapper-locations: classpath:dao/*.xml
   configuration:

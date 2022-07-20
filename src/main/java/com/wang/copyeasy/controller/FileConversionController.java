@@ -1,13 +1,11 @@
 package com.wang.copyeasy.controller;
 
 
-import com.wang.copyeasy.VO.Result;
+import com.wang.copyeasy.vo.Result;
 import com.wang.copyeasy.service.FileConversionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @CrossOrigin

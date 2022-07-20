@@ -1,32 +1,17 @@
 package com.wang.copyeasy.service.impl;
 
 
-import com.alibaba.fastjson.JSON;
-import com.wang.copyeasy.VO.Result;
 import com.wang.copyeasy.dao.FilePathDao;
 import com.wang.copyeasy.service.FileConversionService;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.ParseException;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import com.wang.copyeasy.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import technology.tabula.CommandLineApp;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class FileConversionServiceImpl implements FileConversionService {
@@ -80,7 +65,7 @@ public class FileConversionServiceImpl implements FileConversionService {
     public Result PdfToExcel(String page, String path) {
 
 
-        String[] argsa = new String[]{"-f=JSON", "-p=" + page, path, "-l"};
+     /*   String[] argsa = new String[]{"-f=JSON", "-p=" + page, path, "-l"};
         //CommandLineApp.main(argsa);
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = null;
@@ -123,22 +108,23 @@ public class FileConversionServiceImpl implements FileConversionService {
                         cell = row.createCell(cellCount++);
                         cell.setCellValue((String) map.get("text"));
                     }
-                /*    PoiResult result = PoiUtils.isMergedRegion(sheet, rowCount, cellCount);
+                *//*    PoiResult result = PoiUtils.isMergedRegion(sheet, rowCount, cellCount);
                     if (result.merged) {
                         CellRangeAddress cellAddresses = new CellRangeAddress(result.startRow, result.endRow, result.startCol, result.endCol);
                         sheet.addMergedRegion(cellAddresses);
-                    }*/
+                    }*//*
                 }
             }
             FileOutputStream fileOutputStream = new FileOutputStream("C:\\Users\\Administrator\\Downloads\\" + name+ ".xlsx");
             workbook.write(fileOutputStream);
             workbook.close();
-            return new Result(true,"下载成功","C:\\Users\\Administrator\\Downloads\\" + name+ ".xlsx");
+            return new Result(true,"下载成功","C:\\Users\\Administrator\\Downloads\\" + name+ ".xlsx");*/
 //re
             // cellCount=0;
-        } catch (ParseException | IOException e) {
+     /*   } catch (ParseException | IOException e) {
             throw new RuntimeException(e);
         }
-
+*/
+        return null;
     }
 }

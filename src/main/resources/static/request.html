@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Easy Copy</title>
+    <!-- 引入样式 -->
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
+    <link rel="stylesheet" href="elementui/index.css">
+    <!-- 引入组件库 -->
+    <script src="js/clipboard.min.js"></script>
+    <script type="text/javascript" src="js/axios-0.18.0.js"></script>
+    <script type="text/javascript" src="js/vue.js"></script>
+    <script type="text/javascript" src="elementui/index.js"></script>
+
+
+</head>
+<style>
+    li {
+        list-style: none;
+    }
+
+</style>
+<body>
+<div id="app">
+    <el-container>
+        <el-input style="width: 200px;margin-left: 200px;margin-top: 20px" v-model="dbForm.tableName" clearable
+                  placeholder="请输入表名"></el-input>
+        <el-button style="width: 80px;margin-top: 20px;height: 40px;margin-left: 20px" @click="getFormParams()"
+                   type="primary">生成参数
+        </el-button>
+        <el-input style="width: 200px;margin-left: 100px;margin-top: 20px" clearable v-model="path"
+                  placeholder="请输入访问的路径"></el-input>
+
+        <el-button style="width: 80px;margin-top: 20px;height: 40px;margin-left: 20px" type="primary"
+                   @click="sendRequest()">发送请求
+        </el-button>
+
+
+        <el-input style="width: 200px;margin-left: 100px;margin-top: 20px" clearable
+                  placeholder="请输入表的主键"></el-input>
+
+        <el-button style="width: 80px;margin-top: 20px;height: 40px;margin-left: 20px" type="primary">查询历史
+        </el-button>
+
+    </el-container>
+    <el-container style="margin-left: 100px;margin-top: 20px">
+        <div>
+            <ul v-for="item of formData" style="width: 1300px">
+                <li style="margin-left: 20px;margin-top: 10px;float: left;width:400px;">
+                    <el-tooltip class="item" effect="dark" :content="item.dataType" placement="top-start">
+                        <span style="cursor:pointer">{{ item.columnName
+                            }}--{{item.dataComments}}--{{item.dataLength}}</span>
+                    </el-tooltip>
+                    <template v-if="item.dataType==='DATE'">
+                        <el-date-picker
+                                style="width: 130px"
+                                v-model="item.data"
+                                type="date"
+                                size="small"
+                                value-format="yyyy-MM-dd"
+                                placeholder="选择日期">
+                        </el-date-picker>
+                    </template>
+
+                    <template v-if="item.dataType==='VARCHAR2'||item.dataType==='NUMBER'">
+                        <el-input size="small" style="width: 130px" v-model="item.data"
+                                  :placeholder="item.dataComments"></el-input>
+                    </template>
+
+
+                </li>
+            </ul>
+        </div>
+    </el-container>
+</div>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            //数据库的连接信息
+            dbForm: {
+                url: 'jdbc:oracle:thin:@127.0.0.1:1522:ora11g',
+                userName: 'wang',
+                password: 'wang',
+                tableName: 'USER2'
+            },
+            formData: [{dataLength: '', dataType: '', dataComments: '', columnName: '', data: ''}],
+            data: {},
+            local: 'http://localhost:8082/',
+            path: 'user',
+        },
+        created() {
+
+        },
+        methods: {
+            getFormParams() {
+                this.dbForm.tableName = this.dbForm.tableName.toUpperCase();
+                axios.post(this.local + "getFormParams", this.dbForm).then((res) => {
+                    this.formData = res.data.data;
+                    var array = {};
+                    for (var i = 0; i < this.formData.length; i++) {
+                        array[this.formData[i].columnName] = this.formData[i].data;
+                    }
+                    console.log(array)
+                    this.data = array;
+                })
+            },
+            sendRequest() {
+
+                axios({
+                    method: 'post',
+                    url: this.local + this.path,
+                    data: this.data,
+                    headers: {'Content-Type':'application/json'}
+                }).then((res) => {
+                    this.$message.success(res.data)
+                })
+
+            },
+            sendRequest2(){
+                let test={
+                    age: "1438",
+                    date: "2008-02-02",
+                    id: "5164",
+                    name: "l8huhvo736tnh67333au",
+                }
+                axios.post(this.local+this.path,test).then((res)=>{
+                    this.$message.success(res.data)
+                })
+            }
+
+        },
+    })
+</script>
+</body>
+</html>

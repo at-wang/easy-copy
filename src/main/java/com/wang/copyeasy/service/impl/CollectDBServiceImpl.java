@@ -1,6 +1,6 @@
 package com.wang.copyeasy.service.impl;
 
-import com.wang.copyeasy.VO.Result;
+import com.wang.copyeasy.vo.Result;
 import com.wang.copyeasy.domain.DataBase;
 import com.wang.copyeasy.form.DBForm;
 import com.wang.copyeasy.service.CollectDBService;

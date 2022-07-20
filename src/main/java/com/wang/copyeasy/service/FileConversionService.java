@@ -1,6 +1,6 @@
 package com.wang.copyeasy.service;
 
-import com.wang.copyeasy.VO.Result;
+import com.wang.copyeasy.vo.Result;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface FileConversionService {

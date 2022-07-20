@@ -87,8 +87,8 @@
             <el-upload
                     style="text-align: center"
                     drag
-                    action="/UploadPdf"
-                    :on-success="uploadSuccess"
+                    action="/pdfToHtml"
+                    :on-success="test"
                     :on-remove="UploadPDFForm.data=''"
                     multiple>
                 <i class="el-icon-upload"></i>
@@ -179,6 +179,17 @@
                     })
                 }
 
+            },
+
+            test(){
+                const url = window.URL.createObjectURL(new Blob([data], {type: 'text/html'}));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'test.html') // 下载文件的名称及文件类型后缀
+                document.body.appendChild(link)
+                link.click();
+                document.body.removeChild(link); // 下载完成移除元素
+                window.URL.revokeObjectURL(url); // 释放掉blob对象
             }
 
         },
